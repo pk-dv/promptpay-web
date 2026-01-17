@@ -12,39 +12,67 @@ const { Dragger } = Upload;
 
 function MainScreen() {
     const [searchParams] = useSearchParams();
-    const getId = searchParams.get("id") || "";
-    const getAmount = searchParams.get("amount") || 0;
+    // const getId = searchParams.get("id") || "";
+    // const getAmount = searchParams.get("amount") || 0;
 
     const [loading, setLoading] = useState(true);
     const [file, setFile] = useState(null);
     const [bankAccounts, setBankAccounts] = useState([]);
     const [shopName, setShopName] = useState(null);
-    const [profileLine, setProfileLine] = useState(null);
+
+    const [getId, setOrderId] = useState(searchParams.get("id") || "");
+    const [getAmount, setAmount] = useState(searchParams.get("amount") || 0);
 
     useEffect(() => {
-        liff.init({
-            liffId: CURRENT_ENV.LIFF_ID
-        })
-            .then(async () => {
-                if (liff.isLoggedIn()) {
-                    if (liff.isLoggedIn()) {
-                        liff
-                            .getProfile()
-                            .then((profile) => {
-                                console.log(profile)
-                                setProfileLine(profile);
-                            })
-                            .catch((_) => { });
-                    } else {
-                        liff.login();
-                    }
-                } else {
-                    liff.login();
+        const initLiff = async () => {
+            try {
+                await liff.init({ liffId: CURRENT_ENV.LIFF_ID });
+                await liff.ready;
+
+                if (!liff.isInClient()) {
+                    alert("กรุณาเปิดหน้านี้ผ่าน LINE เท่านั้น");
+                    return;
                 }
-            })
-            .catch((_) => { });
-        return () => { };
+
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+
+
+                console.log("isInClient:", liff.isInClient());
+                console.log("liff.state:", liff.state);
+                console.log("location.search:", window.location.search);
+
+                let id = "";
+                let amount = 0;
+
+                if (liff.isInClient() && liff.state) {
+                    // ✅ LIFF
+                    const params = new URLSearchParams(liff.state);
+                    id = params.get("id") || "";
+                    amount = Number(params.get("amount") || 0);
+                } else {
+                    // ✅ Browser fallback
+                    const params = new URLSearchParams(window.location.search);
+                    id = params.get("id") || "";
+                    amount = Number(params.get("amount") || 0);
+                }
+
+                setOrderId(id);
+                setAmount(amount);
+
+            } catch (err) {
+                console.error("LIFF init error", err);
+                alert("ไม่สามารถเปิด LIFF ได้");
+            }
+        };
+
+        initLiff();
     }, []);
+
+
 
     const props = {
         name: "file",
@@ -57,11 +85,15 @@ function MainScreen() {
         showUploadList: false,
     };
 
-    const handleCopy = async (accountNumber) => {
+    const handleCopy = (accountNumber) => {
         try {
-            await navigator.clipboard.writeText(accountNumber);
-            alert(`คัดลอกเลขบัญชี ${accountNumber} เรียบร้อยแล้ว ✅`);
-        } catch (err) {
+            if (!navigator.clipboard) {
+                alert("อุปกรณ์ไม่รองรับการคัดลอกอัตโนมัติ");
+                return;
+            }
+            navigator.clipboard.writeText(accountNumber);
+            alert(`คัดลอก ${accountNumber} เรียบร้อย ✅`);
+        } catch (e) {
             alert("ไม่สามารถคัดลอกได้");
         }
     };
@@ -84,6 +116,10 @@ function MainScreen() {
     }, [getId]);
 
     const confirmOrder = async () => {
+        if (!file) {
+            alert("กรุณาแนบสลิปก่อน");
+            return;
+        }
         setLoading(true);
         const base64 = await fileToBase64(file);
         try {
@@ -107,214 +143,219 @@ function MainScreen() {
             if (result.status === 200) {
                 // alert(result.message);
                 console.log(result.message);
-                liff.sendMessages([
-                    {
-                        type: 'flex',
-                        altText: `ผลระบบตรวจสอบสลิป`,
-                        contents: {
-                            "type": "bubble",
-                            "direction": "ltr",
-                            "header": {
-                                "type": "box",
-                                "layout": "vertical",
-                                "paddingBottom": "10px",
-                                "backgroundColor": "#509C40FF",
-                                "contents": [
-                                    {
-                                        "type": "text",
-                                        "text": "ตรวจสอบสลิปสำเร็จ",
-                                        "weight": "bold",
-                                        "size": "xl",
-                                        "color": "#FFFFFFFF",
-                                        "align": "center",
-                                        "contents": []
+                if (liff.isInClient()) {
+                    liff.sendMessages([
+                        {
+                            type: 'flex',
+                            altText: `ผลระบบตรวจสอบสลิป`,
+                            contents: {
+                                "type": "bubble",
+                                "direction": "ltr",
+                                "header": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "paddingBottom": "10px",
+                                    "backgroundColor": "#509C40FF",
+                                    "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": `${result.message}`,
+                                            "weight": "bold",
+                                            "size": "xl",
+                                            "color": "#FFFFFFFF",
+                                            "align": "center",
+                                            "contents": []
+                                        }
+                                    ]
+                                },
+                                "body": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "paddingAll": "0px",
+                                    "borderWidth": "10px",
+                                    "backgroundColor": "#509C40FF",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "vertical",
+                                            "contents": [
+                                                {
+                                                    "type": "box",
+                                                    "layout": "vertical",
+                                                    "paddingAll": "10px",
+                                                    "backgroundColor": "#FFFFFFFF",
+                                                    "cornerRadius": "8px",
+                                                    "contents": [
+                                                        {
+                                                            "type": "text",
+                                                            "text": "จำนวนเงิน",
+                                                            "size": "xs",
+                                                            "color": "#9E9E9EFF",
+                                                            "align": "center",
+                                                            "gravity": "center",
+                                                            "contents": []
+                                                        },
+                                                        {
+                                                            "type": "text",
+                                                            "text": `${result.amount.toLocaleString()}`,
+                                                            "weight": "bold",
+                                                            "size": "3xl",
+                                                            "color": "#509C40FF",
+                                                            "align": "center",
+                                                            "contents": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "footer": {
+                                    "type": "box",
+                                    "layout": "horizontal",
+                                    "backgroundColor": "#000000FF",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "horizontal",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "Developer By Punnathat.k",
+                                                    "weight": "bold",
+                                                    "size": "xs",
+                                                    "color": "#FFFFFFFF",
+                                                    "flex": 10,
+                                                    "align": "center",
+                                                    "contents": []
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
                                     }
-                                ]
-                            },
-                            "body": {
-                                "type": "box",
-                                "layout": "vertical",
-                                "paddingAll": "0px",
-                                "borderWidth": "10px",
-                                "backgroundColor": "#509C40FF",
-                                "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                            {
-                                                "type": "box",
-                                                "layout": "vertical",
-                                                "paddingAll": "10px",
-                                                "backgroundColor": "#FFFFFFFF",
-                                                "cornerRadius": "8px",
-                                                "contents": [
-                                                    {
-                                                        "type": "text",
-                                                        "text": "จำนวนเงิน",
-                                                        "size": "xs",
-                                                        "color": "#9E9E9EFF",
-                                                        "align": "center",
-                                                        "gravity": "center",
-                                                        "contents": []
-                                                    },
-                                                    {
-                                                        "type": "text",
-                                                        "text": `${result.amount.toLocaleString()}`,
-                                                        "weight": "bold",
-                                                        "size": "3xl",
-                                                        "color": "#509C40FF",
-                                                        "align": "center",
-                                                        "contents": []
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            "footer": {
-                                "type": "box",
-                                "layout": "horizontal",
-                                "backgroundColor": "#000000FF",
-                                "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "horizontal",
-                                        "contents": [
-                                            {
-                                                "type": "text",
-                                                "text": "Developer By Punnathat.k",
-                                                "weight": "bold",
-                                                "size": "xs",
-                                                "color": "#FFFFFFFF",
-                                                "flex": 10,
-                                                "align": "center",
-                                                "contents": []
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "action": {
-                                    "type": "uri",
-                                    "label": "action",
-                                    "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
                                 }
                             }
                         }
-                    }
-                ]).then(() => {
-                    alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
-                    liff.closeWindow();
-                }).catch((err) => {
-                    console.log('Error sending message: ' + err);
-                    alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
-                });
+                    ]).then(() => {
+                        alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+                        liff.closeWindow();
+                    }).catch((err) => {
+                        console.log('Error sending message: ' + err);
+                        alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+                    });
+                }
+
             } else {
                 console.log(result.message);
-                liff.sendMessages([
-                    {
-                        type: 'flex',
-                        altText: `ผลระบบตรวจสอบสลิป`,
-                        contents: {
-                            "type": "bubble",
-                            "direction": "ltr",
-                            "header": {
-                                "type": "box",
-                                "layout": "vertical",
-                                "paddingBottom": "10px",
-                                "backgroundColor": "#AA3B3BFF",
-                                "contents": [
-                                    {
-                                        "type": "text",
-                                        "text": "ตรวจสอบสลิปสำเร็จ",
-                                        "weight": "bold",
-                                        "size": "xl",
-                                        "color": "#FFFFFFFF",
-                                        "align": "center",
-                                        "contents": []
+                if (liff.isInClient()) {
+                    liff.sendMessages([
+                        {
+                            type: 'flex',
+                            altText: `ผลระบบตรวจสอบสลิป`,
+                            contents: {
+                                "type": "bubble",
+                                "direction": "ltr",
+                                "header": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "paddingBottom": "10px",
+                                    "backgroundColor": "#AA3B3BFF",
+                                    "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": `${result.message}`,
+                                            "weight": "bold",
+                                            "size": "xl",
+                                            "color": "#FFFFFFFF",
+                                            "align": "center",
+                                            "contents": []
+                                        }
+                                    ]
+                                },
+                                "body": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "paddingAll": "0px",
+                                    "borderWidth": "10px",
+                                    "backgroundColor": "#AA3B3BFF",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "vertical",
+                                            "contents": [
+                                                {
+                                                    "type": "box",
+                                                    "layout": "vertical",
+                                                    "paddingAll": "10px",
+                                                    "backgroundColor": "#FFFFFFFF",
+                                                    "cornerRadius": "8px",
+                                                    "contents": [
+                                                        {
+                                                            "type": "text",
+                                                            "text": "จำนวนเงิน",
+                                                            "size": "xs",
+                                                            "color": "#9E9E9EFF",
+                                                            "align": "center",
+                                                            "gravity": "center",
+                                                            "contents": []
+                                                        },
+                                                        {
+                                                            "type": "text",
+                                                            "text": `${result.amount.toLocaleString()}`,
+                                                            "weight": "bold",
+                                                            "size": "3xl",
+                                                            "color": "#AA3B3BFF",
+                                                            "align": "center",
+                                                            "contents": []
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "footer": {
+                                    "type": "box",
+                                    "layout": "horizontal",
+                                    "backgroundColor": "#000000FF",
+                                    "contents": [
+                                        {
+                                            "type": "box",
+                                            "layout": "horizontal",
+                                            "contents": [
+                                                {
+                                                    "type": "text",
+                                                    "text": "Developer By Punnathat.k",
+                                                    "weight": "bold",
+                                                    "size": "xs",
+                                                    "color": "#FFFFFFFF",
+                                                    "flex": 10,
+                                                    "align": "center",
+                                                    "contents": []
+                                                }
+                                            ]
+                                        }
+                                    ],
+                                    "action": {
+                                        "type": "uri",
+                                        "label": "action",
+                                        "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
                                     }
-                                ]
-                            },
-                            "body": {
-                                "type": "box",
-                                "layout": "vertical",
-                                "paddingAll": "0px",
-                                "borderWidth": "10px",
-                                "backgroundColor": "#AA3B3BFF",
-                                "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                            {
-                                                "type": "box",
-                                                "layout": "vertical",
-                                                "paddingAll": "10px",
-                                                "backgroundColor": "#FFFFFFFF",
-                                                "cornerRadius": "8px",
-                                                "contents": [
-                                                    {
-                                                        "type": "text",
-                                                        "text": "จำนวนเงิน",
-                                                        "size": "xs",
-                                                        "color": "#9E9E9EFF",
-                                                        "align": "center",
-                                                        "gravity": "center",
-                                                        "contents": []
-                                                    },
-                                                    {
-                                                        "type": "text",
-                                                        "text": `${result.amount.toLocaleString()}`,
-                                                        "weight": "bold",
-                                                        "size": "3xl",
-                                                        "color": "#AA3B3BFF",
-                                                        "align": "center",
-                                                        "contents": []
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                ]
-                            },
-                            "footer": {
-                                "type": "box",
-                                "layout": "horizontal",
-                                "backgroundColor": "#000000FF",
-                                "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "horizontal",
-                                        "contents": [
-                                            {
-                                                "type": "text",
-                                                "text": "Developer By Punnathat.k",
-                                                "weight": "bold",
-                                                "size": "xs",
-                                                "color": "#FFFFFFFF",
-                                                "flex": 10,
-                                                "align": "center",
-                                                "contents": []
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "action": {
-                                    "type": "uri",
-                                    "label": "action",
-                                    "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
                                 }
                             }
                         }
-                    }
-                ]).then(() => {
-                    alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
-                    liff.closeWindow();
-                }).catch((err) => {
-                    console.log('Error sending message: ' + err);
-                    alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
-                });
+                    ]).then(() => {
+                        alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+                        liff.closeWindow();
+                    }).catch((err) => {
+                        console.log('Error sending message: ' + err);
+                        alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+                    });
+                }
             }
         } catch (err) {
             alert(`Error: ${err.message}`);
