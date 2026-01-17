@@ -6,10 +6,8 @@ import {
   Routes
 } from "react-router-dom";
 import MainScreen from "./components/main/mainScreen";
-import VConsole from 'vconsole';
 
 function App() {
-  new VConsole();
   return (
     <HashRouter>
       <Routes>

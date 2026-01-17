@@ -39,12 +39,6 @@ function MainScreen() {
                     return;
                 }
 
-
-
-                console.log("isInClient:", liff.isInClient());
-                console.log("liff.state:", liff.state);
-                console.log("location.search:", window.location.search);
-
                 let id = "";
                 let amount = 0;
 
@@ -103,7 +97,6 @@ function MainScreen() {
             try {
                 const response = await axios.get(`${CURRENT_ENV.API_BASE_URL}?path=getBankAccounts&id=${getId}`);
                 if (response.data.status === 200) {
-                    console.log(response.data);
                     setBankAccounts(response.data.lists);
                     setShopName(response.data.shopName);
                 }
@@ -138,11 +131,8 @@ function MainScreen() {
             );
 
             const result = await res.json();
-            console.log("API response:", result);
 
             if (result.status === 200) {
-                // alert(result.message);
-                console.log(result.message);
                 if (liff.isInClient()) {
                     liff.sendMessages([
                         {
@@ -241,6 +231,7 @@ function MainScreen() {
                             }
                         }
                     ]).then(() => {
+                        setLoading(false);
                         alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
                         liff.closeWindow();
                     }).catch((err) => {
@@ -250,7 +241,6 @@ function MainScreen() {
                 }
 
             } else {
-                console.log(result.message);
                 if (liff.isInClient()) {
                     liff.sendMessages([
                         {
@@ -349,6 +339,7 @@ function MainScreen() {
                             }
                         }
                     ]).then(() => {
+                        setLoading(false);
                         alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
                         liff.closeWindow();
                     }).catch((err) => {
@@ -360,7 +351,7 @@ function MainScreen() {
         } catch (err) {
             alert(`Error: ${err.message}`);
         } finally {
-            setLoading(false);
+            // setLoading(false);
         }
     };
 
