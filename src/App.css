@@ -1,38 +1,48 @@
-.App {
-  text-align: center;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@200;400;500&display=swap');
+
+
+body {
+  overflow: scroll;
+  margin: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #b6b6b6;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
+@keyframes spin {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
+}
+
+.loadingScreen{
+  position: fixed;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background: rgba(197, 197, 197, 0.749);
+    color: white;
+    display: flex;
+        justify-content: center;
+        align-items: center;
+}
+
+.ant-upload-drag-container{
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+
+.ant-btn{
+  font-family: 'Noto Sans Thai', sans-serif;
 }
