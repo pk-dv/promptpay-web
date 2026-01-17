@@ -1,7 +1,7 @@
 
 import "./App.css";
 import {
-  BrowserRouter,
+  HashRouter,
   Route,
   Routes
 } from "react-router-dom";
@@ -9,11 +9,11 @@ import MainScreen from "./components/main/mainScreen";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<MainScreen />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

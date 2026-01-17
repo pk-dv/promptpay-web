@@ -2,7 +2,7 @@
   "name": "qr-promptpay-system",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://pk-dv.github.io/promptpay-web/",
+  "homepage": "https://pk-dv.github.io/promptpay-web",
   "dependencies": {
     "@ant-design/icons": "^6.1.0",
     "@line/liff": "^2.27.3",

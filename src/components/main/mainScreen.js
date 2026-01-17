@@ -1,13 +1,13 @@
 
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import LoadingScreen from "../Loading/LoadingScreen";
 import { CURRENT_ENV } from "../../utills/constants";
 import axios from "axios";
-import { InboxOutlined, ReloadOutlined } from '@ant-design/icons';
-import { message, Upload, Button } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import { Upload } from 'antd';
 import { useSearchParams } from "react-router-dom";
-import liff from '@line/liff';
+import liff from "@line/liff";
 const { Dragger } = Upload;
 
 function MainScreen() {
@@ -18,33 +18,33 @@ function MainScreen() {
     const [loading, setLoading] = useState(true);
     const [file, setFile] = useState(null);
     const [bankAccounts, setBankAccounts] = useState([]);
-    const [name, setName] = useState(null);
+    const [shopName, setShopName] = useState(null);
     const [profileLine, setProfileLine] = useState(null);
 
-    // useEffect(() => {
-    //     liff.init({
-    //         liffId: CURRENT_ENV.LIFF_ID
-    //     })
-    //         .then(async () => {
-    //             if (liff.isLoggedIn()) {
-    //                 if (liff.isLoggedIn()) {
-    //                     liff
-    //                         .getProfile()
-    //                         .then((profile) => {
-    //                             console.log(profile)
-    //                             setProfileLine(profile);
-    //                         })
-    //                         .catch((_) => { });
-    //                 } else {
-    //                     liff.login();
-    //                 }
-    //             } else {
-    //                 liff.login();
-    //             }
-    //         })
-    //         .catch((_) => { });
-    //     return () => { };
-    // }, []);
+    useEffect(() => {
+        liff.init({
+            liffId: CURRENT_ENV.LIFF_ID
+        })
+            .then(async () => {
+                if (liff.isLoggedIn()) {
+                    if (liff.isLoggedIn()) {
+                        liff
+                            .getProfile()
+                            .then((profile) => {
+                                console.log(profile)
+                                setProfileLine(profile);
+                            })
+                            .catch((_) => { });
+                    } else {
+                        liff.login();
+                    }
+                } else {
+                    liff.login();
+                }
+            })
+            .catch((_) => { });
+        return () => { };
+    }, []);
 
     const props = {
         name: "file",
@@ -60,7 +60,7 @@ function MainScreen() {
     const handleCopy = async (accountNumber) => {
         try {
             await navigator.clipboard.writeText(accountNumber);
-            alert(`คัดลอกเลขบัญชี ${accountNumber} เรียบร้อย`);
+            alert(`คัดลอกเลขบัญชี ${accountNumber} เรียบร้อยแล้ว ✅`);
         } catch (err) {
             alert("ไม่สามารถคัดลอกได้");
         }
@@ -73,7 +73,7 @@ function MainScreen() {
                 if (response.data.status === 200) {
                     console.log(response.data);
                     setBankAccounts(response.data.lists);
-                    setName(response.data.shopName);
+                    setShopName(response.data.shopName);
                 }
             } catch (_) { }
             finally {
@@ -81,18 +81,16 @@ function MainScreen() {
             }
         };
         getBankAccounts();
-    }, []);
+    }, [getId]);
 
     const confirmOrder = async () => {
+        setLoading(true);
         const base64 = await fileToBase64(file);
         try {
             const res = await fetch(
                 CURRENT_ENV.API_BASE_URL,
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify({
                         filename: file.name,
                         mimetype: file.type,
@@ -106,40 +104,223 @@ function MainScreen() {
             const result = await res.json();
             console.log("API response:", result);
 
-            if (result == 200) {
-                alert(result.message);
-
-                // liff.sendMessages([
-                //     {
-                //         type: 'flex',
-                //         altText: `สวัสดีค่ะ ${response.data.shopName} ขอบคุณที่ใช้บริการ QR Promptpay System นะคะ 😊`,
-                //         contents: {
-                //             type: "bubble",
-                //             body: {
-                //                 type: "box",
-                //                 layout: "vertical",
-                //                 contents: [
-                //                     {
-                //                         type: "text",
-                //                         text: `สวัสดีค่ะ ${response.data.shopName} ขอบคุณที่ใช้บริการ QR Promptpay System นะคะ 😊`,
-                //                         weight: "bold"
-                //                     }
-                //                 ]
-                //             }
-                //         }
-                //     }
-                // ]).then(() => {
-                //     console.log('Message sent');
-                // }).catch((err) => {
-                //     console.log('Error sending message: ' + err);
-                // });
+            if (result.status === 200) {
+                // alert(result.message);
+                console.log(result.message);
+                liff.sendMessages([
+                    {
+                        type: 'flex',
+                        altText: `ผลระบบตรวจสอบสลิป`,
+                        contents: {
+                            "type": "bubble",
+                            "direction": "ltr",
+                            "header": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "paddingBottom": "10px",
+                                "backgroundColor": "#509C40FF",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "ตรวจสอบสลิปสำเร็จ",
+                                        "weight": "bold",
+                                        "size": "xl",
+                                        "color": "#FFFFFFFF",
+                                        "align": "center",
+                                        "contents": []
+                                    }
+                                ]
+                            },
+                            "body": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "paddingAll": "0px",
+                                "borderWidth": "10px",
+                                "backgroundColor": "#509C40FF",
+                                "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                            {
+                                                "type": "box",
+                                                "layout": "vertical",
+                                                "paddingAll": "10px",
+                                                "backgroundColor": "#FFFFFFFF",
+                                                "cornerRadius": "8px",
+                                                "contents": [
+                                                    {
+                                                        "type": "text",
+                                                        "text": "จำนวนเงิน",
+                                                        "size": "xs",
+                                                        "color": "#9E9E9EFF",
+                                                        "align": "center",
+                                                        "gravity": "center",
+                                                        "contents": []
+                                                    },
+                                                    {
+                                                        "type": "text",
+                                                        "text": `${result.amount.toLocaleString()}`,
+                                                        "weight": "bold",
+                                                        "size": "3xl",
+                                                        "color": "#509C40FF",
+                                                        "align": "center",
+                                                        "contents": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "footer": {
+                                "type": "box",
+                                "layout": "horizontal",
+                                "backgroundColor": "#000000FF",
+                                "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "horizontal",
+                                        "contents": [
+                                            {
+                                                "type": "text",
+                                                "text": "Developer By Punnathat.k",
+                                                "weight": "bold",
+                                                "size": "xs",
+                                                "color": "#FFFFFFFF",
+                                                "flex": 10,
+                                                "align": "center",
+                                                "contents": []
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "action": {
+                                    "type": "uri",
+                                    "label": "action",
+                                    "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
+                                }
+                            }
+                        }
+                    }
+                ]).then(() => {
+                    alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+                    liff.closeWindow();
+                }).catch((err) => {
+                    console.log('Error sending message: ' + err);
+                    alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+                });
             } else {
-                alert(result.message);
+                console.log(result.message);
+                liff.sendMessages([
+                    {
+                        type: 'flex',
+                        altText: `ผลระบบตรวจสอบสลิป`,
+                        contents: {
+                            "type": "bubble",
+                            "direction": "ltr",
+                            "header": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "paddingBottom": "10px",
+                                "backgroundColor": "#AA3B3BFF",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "ตรวจสอบสลิปสำเร็จ",
+                                        "weight": "bold",
+                                        "size": "xl",
+                                        "color": "#FFFFFFFF",
+                                        "align": "center",
+                                        "contents": []
+                                    }
+                                ]
+                            },
+                            "body": {
+                                "type": "box",
+                                "layout": "vertical",
+                                "paddingAll": "0px",
+                                "borderWidth": "10px",
+                                "backgroundColor": "#AA3B3BFF",
+                                "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                            {
+                                                "type": "box",
+                                                "layout": "vertical",
+                                                "paddingAll": "10px",
+                                                "backgroundColor": "#FFFFFFFF",
+                                                "cornerRadius": "8px",
+                                                "contents": [
+                                                    {
+                                                        "type": "text",
+                                                        "text": "จำนวนเงิน",
+                                                        "size": "xs",
+                                                        "color": "#9E9E9EFF",
+                                                        "align": "center",
+                                                        "gravity": "center",
+                                                        "contents": []
+                                                    },
+                                                    {
+                                                        "type": "text",
+                                                        "text": `${result.amount.toLocaleString()}`,
+                                                        "weight": "bold",
+                                                        "size": "3xl",
+                                                        "color": "#AA3B3BFF",
+                                                        "align": "center",
+                                                        "contents": []
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            "footer": {
+                                "type": "box",
+                                "layout": "horizontal",
+                                "backgroundColor": "#000000FF",
+                                "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "horizontal",
+                                        "contents": [
+                                            {
+                                                "type": "text",
+                                                "text": "Developer By Punnathat.k",
+                                                "weight": "bold",
+                                                "size": "xs",
+                                                "color": "#FFFFFFFF",
+                                                "flex": 10,
+                                                "align": "center",
+                                                "contents": []
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "action": {
+                                    "type": "uri",
+                                    "label": "action",
+                                    "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
+                                }
+                            }
+                        }
+                    }
+                ]).then(() => {
+                    alert(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+                    liff.closeWindow();
+                }).catch((err) => {
+                    console.log('Error sending message: ' + err);
+                    alert('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+                });
             }
         } catch (err) {
             alert(`Error: ${err.message}`);
+        } finally {
+            setLoading(false);
         }
-
     };
 
     const fileToBase64 = (file) =>
@@ -192,7 +373,7 @@ function MainScreen() {
                                     ยอดรวม : {Number(getAmount).toLocaleString()} บาท
                                 </div>
                                 <div style={{}}>
-                                    {name}
+                                    {shopName}
                                 </div>
                             </div>
                         </div>
@@ -340,13 +521,13 @@ function MainScreen() {
                         {
                             file ? (
                                 <div onClick={confirmOrder} style={{ display: `flex`, justifyContent: `center` }}>
-                                    <div style={{ width: `80%`, padding: `10px 20px`, backgroundColor: `#4d8a96`, color: `#ffffff`, border: `none`, borderRadius: `5px`, cursor: `pointer`, borderRadius: `10px`, textAlign: `center` }}>
+                                    <div style={{ width: `80%`, padding: `10px 20px`, backgroundColor: `#4d8a96`, color: `#ffffff`, border: `none`, cursor: `pointer`, borderRadius: `10px`, textAlign: `center` }}>
                                         ยืนยันการชำระเงิน
                                     </div>
                                 </div>
                             ) : (
                                 <div style={{ display: `flex`, justifyContent: `center` }}>
-                                    <div style={{ width: `80%`, padding: `10px 20px`, backgroundColor: `grey`, color: `#ffffff`, border: `none`, borderRadius: `5px`, borderRadius: `10px`, textAlign: `center` }}>
+                                    <div style={{ width: `80%`, padding: `10px 20px`, backgroundColor: `grey`, color: `#ffffff`, border: `none`, borderRadius: `10px`, textAlign: `center` }}>
                                         ยืนยันการชำระเงิน
                                     </div>
                                 </div>
