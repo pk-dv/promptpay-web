@@ -46,3 +46,11 @@ body {
 .ant-btn{
   font-family: 'Noto Sans Thai', sans-serif;
 }
+
+.ant-result{
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+
+.ant-message-custom-content {
+  font-family: 'Noto Sans Thai', sans-serif;
+}
