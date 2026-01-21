@@ -38,25 +38,23 @@ function MainScreen() {
                 if (!liff.isInClient()) {
                     error("กรุณาเปิดหน้านี้ผ่าน LINE เท่านั้น");
                     return
-                }
-
-                let id = "";
-                let amount = 0;
-
-                if (liff.isInClient() && liff.state) {
-                    const params = new URLSearchParams(liff.state);
-                    id = params.get("id") || "";
-                    amount = Number(params.get("amount") || 0);
                 } else {
-                    const params = new URLSearchParams(window.location.search);
-                    id = params.get("id") || "";
-                    amount = Number(params.get("amount") || 0);
+                    let id = "";
+                    let amount = 0;
+
+                    if (liff.isInClient() && liff.state) {
+                        const params = new URLSearchParams(liff.state);
+                        id = params.get("id") || "";
+                        amount = Number(params.get("amount") || 0);
+                    } else {
+                        const params = new URLSearchParams(window.location.search);
+                        id = params.get("id") || "";
+                        amount = Number(params.get("amount") || 0);
+                    }
+
+                    setOrderId(id);
+                    setAmount(amount);
                 }
-
-                setOrderId(id);
-                setAmount(amount);
-
-
 
             } catch (err) {
                 console.error("LIFF init error", err);
@@ -106,22 +104,27 @@ function MainScreen() {
     };
 
     useEffect(() => {
-        const getBankAccounts = async () => {
-            try {
-                const response = await axios.get(`${CURRENT_ENV.API_BASE_URL}?path=getBankAccounts&id=${getId}`);
-                if (response.data.status === 200) {
-                    setBankAccounts(response.data.lists);
-                    setShopName(response.data.shopName);
-                    setIsActive(response.data.isActive);
-                } else {
-                    error(response.data.message);
+        if (getId) {
+            const getBankAccounts = async () => {
+                try {
+
+                    const response = await axios.get(`${CURRENT_ENV.API_BASE_URL}?path=getBankAccounts&id=${getId}`);
+                    if (response.data.status === 200) {
+                        setBankAccounts(response.data.lists);
+                        setShopName(response.data.shopName);
+                        setIsActive(response.data.isActive);
+                    } else {
+                        error(response.data.message);
+                    }
+                } catch (_) { }
+                finally {
+                    setLoading(false)
                 }
-            } catch (_) { }
-            finally {
-                setLoading(false)
-            }
-        };
-        getBankAccounts();
+            };
+            getBankAccounts();
+        } else {
+            setLoading(false)
+        }
     }, [getId]);
 
     const confirmOrder = async () => {
