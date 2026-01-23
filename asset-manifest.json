@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/promptpay-web/static/css/main.5a762070.css",
-    "main.js": "/promptpay-web/static/js/main.f0bc6398.js",
+    "main.js": "/promptpay-web/static/js/main.c7f11cb1.js",
     "static/js/453.53596196.chunk.js": "/promptpay-web/static/js/453.53596196.chunk.js",
     "index.html": "/promptpay-web/index.html",
     "main.5a762070.css.map": "/promptpay-web/static/css/main.5a762070.css.map",
-    "main.f0bc6398.js.map": "/promptpay-web/static/js/main.f0bc6398.js.map",
+    "main.c7f11cb1.js.map": "/promptpay-web/static/js/main.c7f11cb1.js.map",
     "453.53596196.chunk.js.map": "/promptpay-web/static/js/453.53596196.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5a762070.css",
-    "static/js/main.f0bc6398.js"
+    "static/js/main.c7f11cb1.js"
   ]
 }
