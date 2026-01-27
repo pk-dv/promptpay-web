@@ -37,6 +37,8 @@ function MainScreen() {
 
                 if (!liff.isInClient()) {
                     error("กรุณาเปิดหน้านี้ผ่าน LINE เท่านั้น");
+                    setIsActive(403)
+                    setLoading(false)
                     return
                 } else {
                     let id = "";
@@ -104,27 +106,27 @@ function MainScreen() {
     };
 
     useEffect(() => {
-        if (getId) {
-            const getBankAccounts = async () => {
-                try {
-
-                    const response = await axios.get(`${CURRENT_ENV.API_BASE_URL}?path=getBankAccounts&id=${getId}`);
+        const getBankAccounts = async () => {
+            try {
+                if (getId) {
+                    const response = await axios.get(`${CURRENT_ENV.API_BASE_URL}?path=getBankAccounts&id=${getId}&uid=${liff.getContext().userId || ""}`);
                     if (response.data.status === 200) {
                         setBankAccounts(response.data.lists);
                         setShopName(response.data.shopName);
                         setIsActive(response.data.isActive);
+                        setLoading(false)
                     } else {
+                        setLoading(false)
                         error(response.data.message);
                     }
-                } catch (_) { }
-                finally {
-                    setLoading(false)
                 }
-            };
-            getBankAccounts();
-        } else {
-            setLoading(false)
-        }
+                return;
+            } catch (_) { }
+            finally {
+            }
+        };
+        getBankAccounts();
+
     }, [getId]);
 
     const confirmOrder = async () => {
@@ -611,11 +613,10 @@ function MainScreen() {
                                     status="403"
                                     title="403"
                                     subTitle="ขออภัย ไม่สามารถใช้งานระบบได้ อาจเป็นไปได้ว่าระบบถูกยกเลิกหรือหมดอายุแล้ว กรุณาติดต่อแอดมิน"
-                                // extra={<Button type="primary">Back Home</Button>}
                                 />
                             </div>
                         </>
-                    ) :
+                    ) : isActive === 403 ? (
                         <>
                             <div style={{
                                 width: "100%",
@@ -629,10 +630,10 @@ function MainScreen() {
                                     status="403"
                                     title="403"
                                     subTitle="ขออภัย กรุณาเปิดหน้านี้ผ่าน LINE เท่านั้น"
-                                // extra={<Button type="primary">Back Home</Button>}
                                 />
                             </div>
                         </>
+                    ) : null
 
             }
 

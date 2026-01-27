@@ -5,22 +5,24 @@ import {
   Route,
   Routes
 } from "react-router-dom";
-import MainScreen from "./components/main/mainScreen";
-import DetectingDevtools from "./components/detecting";
-
-// import VConsole from "vconsole";
+import MainScreen from "./components/Main/MainScreen";
+import { CURRENT_ENV } from "./utills/constants";
+import { useEffect } from "react";
 
 function App() {
-  // VConsole && new VConsole();
 
-  DetectingDevtools();
+  useEffect(() => {
+    document.title = `ระบบตรวจสอบสลิป (v${CURRENT_ENV.VERSION})`;
+  }, []);
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="*" element={<MainScreen />} />
-      </Routes>
-    </HashRouter>
+    <>
+      <HashRouter>
+        <Routes>
+          <Route path="*" element={<MainScreen />} />
+        </Routes>
+      </HashRouter>
+    </>
   );
 }
 

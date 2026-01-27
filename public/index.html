@@ -3,13 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Web site created using create-react-app"
+      content="Developer By Punnathat.K"
     />
     <!-- <style>
       /* make sure root and body occupy full height for full-bleed backgrounds on mobile */
@@ -31,11 +37,29 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>QRPromptpay System</title>
+    <title>ระบบตรวจสอบสลิป By Punnathat.K</title>
   </head>
   <body oncontextmenu="return false">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>Developer By Punnathat.K</noscript>
+
+    <script>
+      ;(function () {
+        const threshold = 160
+        const detect = () => {
+          if (
+            window.outerWidth - window.innerWidth > threshold ||
+            window.outerHeight - window.innerHeight > threshold
+          ) {
+            document.documentElement.innerHTML = ''
+            location.replace('about:blank')
+          }
+        }
+
+        setInterval(detect, 500)
+      })()
+    </script>
     <div id="root"></div>
+
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
