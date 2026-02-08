@@ -40,23 +40,23 @@ function MainScreen() {
                     setIsActive(403)
                     setLoading(false)
                     return
-                } else {
-                    let id = "";
-                    let amount = 0;
-
-                    if (liff.isInClient() && liff.state) {
-                        const params = new URLSearchParams(liff.state);
-                        id = params.get("id") || "";
-                        amount = Number(params.get("amount") || 0);
-                    } else {
-                        const params = new URLSearchParams(window.location.search);
-                        id = params.get("id") || "";
-                        amount = Number(params.get("amount") || 0);
-                    }
-
-                    setOrderId(id);
-                    setAmount(amount);
                 }
+
+                let id = "";
+                let amount = 0;
+
+                if (liff.isInClient() && liff.state) {
+                    const params = new URLSearchParams(liff.state);
+                    id = params.get("id") || "";
+                    amount = Number(params.get("amount") || 0);
+                } else {
+                    const params = new URLSearchParams(window.location.search);
+                    id = params.get("id") || "";
+                    amount = Number(params.get("amount") || 0);
+                }
+
+                setOrderId(id);
+                setAmount(amount);
 
             } catch (err) {
                 console.error("LIFF init error", err);
@@ -436,88 +436,91 @@ function MainScreen() {
                                         </div>
                                     </div>
 
-                                    <div style={{
-                                        width: `100%`,
-                                        padding: `12px 0`,
-                                        borderBottom: `2px solid #000000`,
-                                        fontSize: 16
-                                    }}>
+
+                                    {
+                                        bankAccounts.length > 0 &&
                                         <div style={{
-
+                                            width: `100%`,
+                                            padding: `12px 0`,
+                                            borderBottom: `2px solid #000000`,
+                                            fontSize: 16
                                         }}>
-                                            <div>
-                                                ข้อมูลการชำระเงิน
-                                            </div>
-                                            <div style={{ fontSize: 12 }}>
-                                                สามารถคัดลอกหมายเลขบัญชีของผู้ขายจากรายการดังต่อไปนี้
-                                            </div>
-                                            <div>
-                                                {bankAccounts.map((item, index) => (
-                                                    <div
-                                                        key={index}
-                                                        style={{
-                                                            display: "flex",
-                                                            flexDirection: "row",
-                                                            justifyContent: "center",
-                                                            alignItems: "center",
-                                                            paddingTop: "8px",
-                                                        }}
-                                                    >
-                                                        <div style={{ display: "flex", flexDirection: "row", alignItems: "center", flex: 8 }}>
-                                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                                <img
-                                                                    src={item.logo}
-                                                                    alt={item.bankName}
-                                                                    style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-                                                                />
-                                                            </div>
+                                            <div style={{}}>
+                                                <div>
+                                                    ข้อมูลการชำระเงิน
+                                                </div>
+                                                <div style={{ fontSize: 12 }}>
+                                                    สามารถคัดลอกหมายเลขบัญชีของผู้ขายจากรายการดังต่อไปนี้
+                                                </div>
+                                                <div>
+                                                    {bankAccounts.map((item, index) => (
+                                                        <div
+                                                            key={index}
+                                                            style={{
+                                                                display: "flex",
+                                                                flexDirection: "row",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                                paddingTop: "8px",
+                                                            }}
+                                                        >
+                                                            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", flex: 8 }}>
+                                                                <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                                                    <img
+                                                                        src={item.logo}
+                                                                        alt={item.bankName}
+                                                                        style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+                                                                    />
+                                                                </div>
 
-                                                            <div
-                                                                style={{
-                                                                    marginLeft: "12px",
-                                                                    display: "flex",
-                                                                    flexDirection: "column",
-                                                                    justifyContent: "center",
-                                                                }}
-                                                            >
-                                                                <div>{item.accountNumber}</div>
-                                                                <div style={{ fontSize: "14px" }}>{item.bankName}</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div style={{ flex: 3 }}>
-                                                            <div
-                                                                style={{
-                                                                    width: "100%",
-                                                                    display: "flex",
-                                                                    alignItems: "center",
-                                                                    justifyContent: "center",
-                                                                }}
-                                                            >
                                                                 <div
-                                                                    onClick={() => handleCopy(item.accountNumber)}
                                                                     style={{
-                                                                        textAlign: "center",
-                                                                        padding: "5px 0",
-                                                                        userSelect: "none",
-                                                                        backgroundColor: "#4d8a96",
-                                                                        color: "#ffffff",
-                                                                        borderRadius: "20px",
-                                                                        cursor: "pointer",
-                                                                        width: "100px",
-                                                                        fontSize: "14px",
+                                                                        marginLeft: "12px",
+                                                                        display: "flex",
+                                                                        flexDirection: "column",
+                                                                        justifyContent: "center",
                                                                     }}
                                                                 >
-                                                                    คัดลอก
+                                                                    <div>{item.accountNumber}</div>
+                                                                    <div style={{ fontSize: "14px" }}>{item.bankName}</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div style={{ flex: 3 }}>
+                                                                <div
+                                                                    style={{
+                                                                        width: "100%",
+                                                                        display: "flex",
+                                                                        alignItems: "center",
+                                                                        justifyContent: "center",
+                                                                    }}
+                                                                >
+                                                                    <div
+                                                                        onClick={() => handleCopy(item.accountNumber)}
+                                                                        style={{
+                                                                            textAlign: "center",
+                                                                            padding: "5px 0",
+                                                                            userSelect: "none",
+                                                                            backgroundColor: "#4d8a96",
+                                                                            color: "#ffffff",
+                                                                            borderRadius: "20px",
+                                                                            cursor: "pointer",
+                                                                            width: "100px",
+                                                                            fontSize: "14px",
+                                                                        }}
+                                                                    >
+                                                                        คัดลอก
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
-
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    }
+
+
 
                                     <div style={{
                                         width: `100%`,
