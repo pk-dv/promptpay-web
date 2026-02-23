@@ -153,222 +153,326 @@ function MainScreen() {
 
             const result = await res.json();
 
-            if (result.status === 200) {
-                if (liff.isInClient()) {
-                    liff.sendMessages([
-                        {
-                            type: 'flex',
-                            altText: `ผลระบบตรวจสอบสลิป`,
-                            contents: {
-                                "type": "bubble",
-                                "direction": "ltr",
-                                "header": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "paddingBottom": "10px",
-                                    "backgroundColor": "#509C40FF",
-                                    "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": `${result.message}`,
-                                            "weight": "bold",
-                                            "size": "xl",
-                                            "color": "#FFFFFFFF",
-                                            "align": "center",
-                                            "contents": []
-                                        }
-                                    ]
-                                },
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "paddingAll": "0px",
-                                    "borderWidth": "10px",
-                                    "backgroundColor": "#509C40FF",
-                                    "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "vertical",
-                                            "contents": [
-                                                {
-                                                    "type": "box",
-                                                    "layout": "vertical",
-                                                    "paddingAll": "10px",
-                                                    "backgroundColor": "#FFFFFFFF",
-                                                    "cornerRadius": "8px",
-                                                    "contents": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": "จำนวนเงิน",
-                                                            "size": "xs",
-                                                            "color": "#9E9E9EFF",
-                                                            "align": "center",
-                                                            "gravity": "center",
-                                                            "contents": []
-                                                        },
-                                                        {
-                                                            "type": "text",
-                                                            "text": `${result.amount.toLocaleString()}`,
-                                                            "weight": "bold",
-                                                            "size": "3xl",
-                                                            "color": "#509C40FF",
-                                                            "align": "center",
-                                                            "contents": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "footer": {
-                                    "type": "box",
-                                    "layout": "horizontal",
-                                    "backgroundColor": "#000000FF",
-                                    "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "horizontal",
-                                            "contents": [
-                                                {
-                                                    "type": "text",
-                                                    "text": "Developer By Punnathat.k",
-                                                    "weight": "bold",
-                                                    "size": "xs",
-                                                    "color": "#FFFFFFFF",
-                                                    "flex": 10,
-                                                    "align": "center",
-                                                    "contents": []
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "action": {
-                                        "type": "uri",
-                                        "label": "action",
-                                        "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
-                                    }
-                                }
-                            }
-                        }
-                    ]).then(() => {
-                        setLoading(false);
-                        success(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
-                        liff.closeWindow();
-                    }).catch((err) => {
-                        console.log('Error sending message: ' + err);
-                        error('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
-                    });
-                }
+            if (!liff.isInClient()) return;
 
-            } else {
-                if (liff.isInClient()) {
-                    liff.sendMessages([
-                        {
-                            type: 'flex',
-                            altText: `ผลระบบตรวจสอบสลิป`,
-                            contents: {
-                                "type": "bubble",
-                                "direction": "ltr",
-                                "header": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "paddingBottom": "10px",
-                                    "backgroundColor": "#AA3B3BFF",
-                                    "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": `${result.message}`,
-                                            "weight": "bold",
-                                            "size": "xl",
-                                            "color": "#FFFFFFFF",
-                                            "align": "center",
-                                            "contents": []
-                                        }
-                                    ]
-                                },
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "paddingAll": "0px",
-                                    "borderWidth": "10px",
-                                    "backgroundColor": "#AA3B3BFF",
-                                    "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "vertical",
-                                            "contents": [
-                                                {
-                                                    "type": "box",
-                                                    "layout": "vertical",
-                                                    "paddingAll": "10px",
-                                                    "backgroundColor": "#FFFFFFFF",
-                                                    "cornerRadius": "8px",
-                                                    "contents": [
-                                                        {
-                                                            "type": "text",
-                                                            "text": "จำนวนเงิน",
-                                                            "size": "xs",
-                                                            "color": "#9E9E9EFF",
-                                                            "align": "center",
-                                                            "gravity": "center",
-                                                            "contents": []
-                                                        },
-                                                        {
-                                                            "type": "text",
-                                                            "text": `${result.amount.toLocaleString()}`,
-                                                            "weight": "bold",
-                                                            "size": "3xl",
-                                                            "color": "#AA3B3BFF",
-                                                            "align": "center",
-                                                            "contents": []
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "footer": {
-                                    "type": "box",
-                                    "layout": "horizontal",
-                                    "backgroundColor": "#000000FF",
-                                    "contents": [
-                                        {
-                                            "type": "box",
-                                            "layout": "horizontal",
-                                            "contents": [
-                                                {
-                                                    "type": "text",
-                                                    "text": "Developer By Punnathat.k",
-                                                    "weight": "bold",
-                                                    "size": "xs",
-                                                    "color": "#FFFFFFFF",
-                                                    "flex": 10,
-                                                    "align": "center",
-                                                    "contents": []
-                                                }
-                                            ]
-                                        }
-                                    ],
-                                    "action": {
-                                        "type": "uri",
-                                        "label": "action",
-                                        "uri": "https://fastwork.co/user/punnathat/chatbot-42013422?source=seller-center_my-service_share-link"
+            const isSuccess = result.status === 200;
+
+            const theme = {
+                color: isSuccess ? "#509C40FF" : "#AA3B3BFF",
+                text: result.message
+            };
+
+            const flexMessage = {
+                type: "flex",
+                altText: "ผลระบบตรวจสอบสลิป",
+                contents: {
+                    type: "bubble",
+                    direction: "ltr",
+
+                    header: {
+                        type: "box",
+                        layout: "vertical",
+                        paddingBottom: "10px",
+                        backgroundColor: theme.color,
+                        contents: [{
+                            type: "text",
+                            text: theme.text,
+                            weight: "bold",
+                            size: "xl",
+                            color: "#FFFFFFFF",
+                            align: "center"
+                        }]
+                    },
+
+                    body: {
+                        type: "box",
+                        layout: "vertical",
+                        paddingAll: "0px",
+                        borderWidth: "10px",
+                        backgroundColor: theme.color,
+                        contents: [{
+                            type: "box",
+                            layout: "vertical",
+                            contents: [{
+                                type: "box",
+                                layout: "vertical",
+                                paddingAll: "10px",
+                                backgroundColor: "#FFFFFFFF",
+                                cornerRadius: "8px",
+                                contents: [
+                                    {
+                                        type: "text",
+                                        text: "จำนวนเงิน",
+                                        size: "xs",
+                                        color: "#9E9E9EFF",
+                                        align: "center"
+                                    },
+                                    {
+                                        type: "text",
+                                        text: Number(result.amount || 0).toLocaleString(),
+                                        weight: "bold",
+                                        size: "3xl",
+                                        color: theme.color,
+                                        align: "center"
                                     }
-                                }
-                            }
+                                ]
+                            }]
+                        }]
+                    },
+
+                    footer: {
+                        type: "box",
+                        layout: "horizontal",
+                        backgroundColor: "#000000FF",
+                        contents: [{
+                            type: "box",
+                            layout: "horizontal",
+                            contents: [{
+                                type: "text",
+                                text: "Developer By Punnathat.k",
+                                weight: "bold",
+                                size: "xs",
+                                color: "#FFFFFFFF",
+                                flex: 10,
+                                align: "center"
+                            }]
+                        }],
+                        action: {
+                            type: "uri",
+                            label: "action",
+                            uri: "https://fastwork.co/user/punnathat/chatbot-40522812"
                         }
-                    ]).then(() => {
-                        setLoading(false);
-                        success(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
-                        liff.closeWindow();
-                    }).catch((err) => {
-                        console.log('Error sending message: ' + err);
-                        error('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
-                    });
+                    }
                 }
-            }
+            };
+
+            liff.sendMessages([flexMessage])
+                .then(() => {
+                    setLoading(false);
+                    success("✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว");
+                    liff.closeWindow();
+                })
+                .catch(err => {
+                    console.error("Send message error:", err);
+                    error("❌ ไม่สามารถส่งข้อความได้ Error: " + err);
+                });
+
+            // if (result.status === 200) {
+            //     if (liff.isInClient()) {
+            //         liff.sendMessages([
+            //             {
+            //                 type: 'flex',
+            //                 altText: `ผลระบบตรวจสอบสลิป`,
+            //                 contents: {
+            //                     "type": "bubble",
+            //                     "direction": "ltr",
+            //                     "header": {
+            //                         "type": "box",
+            //                         "layout": "vertical",
+            //                         "paddingBottom": "10px",
+            //                         "backgroundColor": "#509C40FF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "text",
+            //                                 "text": `${result.message}`,
+            //                                 "weight": "bold",
+            //                                 "size": "xl",
+            //                                 "color": "#FFFFFFFF",
+            //                                 "align": "center",
+            //                                 "contents": []
+            //                             }
+            //                         ]
+            //                     },
+            //                     "body": {
+            //                         "type": "box",
+            //                         "layout": "vertical",
+            //                         "paddingAll": "0px",
+            //                         "borderWidth": "10px",
+            //                         "backgroundColor": "#509C40FF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "box",
+            //                                 "layout": "vertical",
+            //                                 "contents": [
+            //                                     {
+            //                                         "type": "box",
+            //                                         "layout": "vertical",
+            //                                         "paddingAll": "10px",
+            //                                         "backgroundColor": "#FFFFFFFF",
+            //                                         "cornerRadius": "8px",
+            //                                         "contents": [
+            //                                             {
+            //                                                 "type": "text",
+            //                                                 "text": "จำนวนเงิน",
+            //                                                 "size": "xs",
+            //                                                 "color": "#9E9E9EFF",
+            //                                                 "align": "center",
+            //                                                 "gravity": "center",
+            //                                                 "contents": []
+            //                                             },
+            //                                             {
+            //                                                 "type": "text",
+            //                                                 "text": `${result.amount.toLocaleString()}`,
+            //                                                 "weight": "bold",
+            //                                                 "size": "3xl",
+            //                                                 "color": "#509C40FF",
+            //                                                 "align": "center",
+            //                                                 "contents": []
+            //                                             }
+            //                                         ]
+            //                                     }
+            //                                 ]
+            //                             }
+            //                         ]
+            //                     },
+            //                     "footer": {
+            //                         "type": "box",
+            //                         "layout": "horizontal",
+            //                         "backgroundColor": "#000000FF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "box",
+            //                                 "layout": "horizontal",
+            //                                 "contents": [
+            //                                     {
+            //                                         "type": "text",
+            //                                         "text": "Developer By Punnathat.k",
+            //                                         "weight": "bold",
+            //                                         "size": "xs",
+            //                                         "color": "#FFFFFFFF",
+            //                                         "flex": 10,
+            //                                         "align": "center",
+            //                                         "contents": []
+            //                                     }
+            //                                 ]
+            //                             }
+            //                         ],
+            //                         "action": {
+            //                             "type": "uri",
+            //                             "label": "action",
+            //                             "uri": "https://fastwork.co/user/punnathat/chatbot-40522812"
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         ]).then(() => {
+            //             setLoading(false);
+            //             success(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+            //             liff.closeWindow();
+            //         }).catch((err) => {
+            //             console.log('Error sending message: ' + err);
+            //             error('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+            //         });
+            //     }
+
+            // } else {
+            //     if (liff.isInClient()) {
+            //         liff.sendMessages([
+            //             {
+            //                 type: 'flex',
+            //                 altText: `ผลระบบตรวจสอบสลิป`,
+            //                 contents: {
+            //                     "type": "bubble",
+            //                     "direction": "ltr",
+            //                     "header": {
+            //                         "type": "box",
+            //                         "layout": "vertical",
+            //                         "paddingBottom": "10px",
+            //                         "backgroundColor": "#AA3B3BFF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "text",
+            //                                 "text": `${result.message}`,
+            //                                 "weight": "bold",
+            //                                 "size": "xl",
+            //                                 "color": "#FFFFFFFF",
+            //                                 "align": "center",
+            //                                 "contents": []
+            //                             }
+            //                         ]
+            //                     },
+            //                     "body": {
+            //                         "type": "box",
+            //                         "layout": "vertical",
+            //                         "paddingAll": "0px",
+            //                         "borderWidth": "10px",
+            //                         "backgroundColor": "#AA3B3BFF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "box",
+            //                                 "layout": "vertical",
+            //                                 "contents": [
+            //                                     {
+            //                                         "type": "box",
+            //                                         "layout": "vertical",
+            //                                         "paddingAll": "10px",
+            //                                         "backgroundColor": "#FFFFFFFF",
+            //                                         "cornerRadius": "8px",
+            //                                         "contents": [
+            //                                             {
+            //                                                 "type": "text",
+            //                                                 "text": "จำนวนเงิน",
+            //                                                 "size": "xs",
+            //                                                 "color": "#9E9E9EFF",
+            //                                                 "align": "center",
+            //                                                 "gravity": "center",
+            //                                                 "contents": []
+            //                                             },
+            //                                             {
+            //                                                 "type": "text",
+            //                                                 "text": `${result.amount.toLocaleString()}`,
+            //                                                 "weight": "bold",
+            //                                                 "size": "3xl",
+            //                                                 "color": "#AA3B3BFF",
+            //                                                 "align": "center",
+            //                                                 "contents": []
+            //                                             }
+            //                                         ]
+            //                                     }
+            //                                 ]
+            //                             }
+            //                         ]
+            //                     },
+            //                     "footer": {
+            //                         "type": "box",
+            //                         "layout": "horizontal",
+            //                         "backgroundColor": "#000000FF",
+            //                         "contents": [
+            //                             {
+            //                                 "type": "box",
+            //                                 "layout": "horizontal",
+            //                                 "contents": [
+            //                                     {
+            //                                         "type": "text",
+            //                                         "text": "Developer By Punnathat.k",
+            //                                         "weight": "bold",
+            //                                         "size": "xs",
+            //                                         "color": "#FFFFFFFF",
+            //                                         "flex": 10,
+            //                                         "align": "center",
+            //                                         "contents": []
+            //                                     }
+            //                                 ]
+            //                             }
+            //                         ],
+            //                         "action": {
+            //                             "type": "uri",
+            //                             "label": "action",
+            //                             "uri": "https://fastwork.co/user/punnathat/chatbot-40522812"
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         ]).then(() => {
+            //             setLoading(false);
+            //             success(`✅ ส่งผลตรวจสอบสลิปไปทางช่องแชทเรียบร้อยแล้ว`);
+            //             liff.closeWindow();
+            //         }).catch((err) => {
+            //             console.log('Error sending message: ' + err);
+            //             error('❌ ไม่สามารถส่งข้อความได้ Error: ' + err);
+            //         });
+            //     }
+            // }
         } catch (err) {
             error(`Error: ${err.message}`);
         } finally {
